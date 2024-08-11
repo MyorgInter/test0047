@@ -4,5 +4,5 @@ metadata:
   name: "test0047"
 spec:
   type: service
-  owner: "guest
+  owner: "guest"
   lifecycle: experimental
