@@ -4,5 +4,5 @@ metadata:
   name: "test0047"
 spec:
   type: service
-  owner: "dp.local-dev.team"
+  owner: "guest
   lifecycle: experimental
