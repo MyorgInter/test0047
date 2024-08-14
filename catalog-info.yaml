@@ -5,4 +5,4 @@ metadata:
 spec:
   type: service
   owner: "guests"
-  lifecycle: experimental
+  lifecycle: production
