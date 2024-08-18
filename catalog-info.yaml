@@ -2,6 +2,8 @@ apiVersion: backstage.io/v1alpha1
 kind: Component
 metadata:
   name: "test0047"
+  annotations:
+    github.com/project-slug: MyorgInter/test0047
 spec:
   type: service
   owner: "guests"
