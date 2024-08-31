@@ -4,6 +4,9 @@ metadata:
   name: "test0047"
   annotations:
     github.com/project-slug: MyorgInter/test0047
+    jira/project-key: DESP
+    jira/component: <example-component> # optional, you might skip this value to fetch data for all components
+    jira/token-type: Bearer # optional, used for Activity stream feed. If you are using Basic auth you can skip this.
 spec:
   type: service
   owner: "guests"
