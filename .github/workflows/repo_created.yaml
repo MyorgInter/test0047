@@ -1,0 +1,54 @@
+name: GitHub Repo Creations
+
+on:
+  workflow_dispatch:
+    inputs:
+      RepoName:
+        type: string
+        description: "Repo Names such as 'my-repo'"
+        required: true
+      RecipientName:
+        type: string
+        description: Name of the recipient
+        required: true
+      ServiceName:
+        type: string
+        description: "Name of Service such as 'Java' or 'NodeJs'" 
+        required: true
+      RecipientEmailAddress:
+        type: string
+        description: Email address to get repository details
+        required: true
+  repository_dispatch:
+    types: [repo-created]
+permissions:
+    id-token: write
+    contents: read
+    issues: write 
+
+jobs:
+  compose-mail:
+    runs-on: ubuntu-latest
+    outputs: 
+        mail_subject: ${{ steps.script.outputs.mail_subject }}
+        mail_recipient: ${{ steps.script.outputs.mail_recipient }}
+        mail_body: ${{ steps.script.outputs.mail_body }}
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+      - name: Run createRepoemail.sh script
+        id: script
+        run: ./.github/scripts/createRepoEmail.sh \
+          ${{ github.event.inputs.RecipientName }} \
+          ${{ github.event.inputs.RepoName }} \
+          ${{ github.event.inputs.RecipientEmailAddress }} \
+          ${{ github.event.inputs.ServiceName }}
+  trigger-send-mail:
+     needs: 
+        - compose-mail
+     uses: ./.github/workflows/sendEmail.yaml
+     with:
+         mail_subject: ${{ needs.compose-mail.outputs.mail_subject }}
+         mail_recipient: ${{ needs.compose-mail.outputs.mail_recipient }}
+         mail_body: ${{ needs.compose-mail.outputs.mail_body }}
+  
