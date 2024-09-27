@@ -24,6 +24,12 @@ jobs:
   send_message_to_queue:
     runs-on: ubuntu-latest
     steps:
+      - name: Print Email Details
+        run: |
+          echo "Mail Subject: ${{ github.event.inputs.mail_subject }}"
+          echo "Mail Recipient: ${{ github.event.inputs.mail_recipient }}"
+          echo "Mail Body: ${{ github.event.inputs.mail_body }}"
+
       - name: Azure Login
         uses: azure/login@v1
         with:
@@ -40,10 +46,10 @@ jobs:
             --arg mailSubject "${{ github.event.inputs.mail_subject }}" \
             --arg mailRecipient "${{ github.event.inputs.mail_recipient }}" \
             --arg mailBody "${{ github.event.inputs.mail_body }}" \
-          --argjson attachmentExist false \
-          --arg attachmentName "" \
-          --arg contentByte "" \
-          '{mailSubject: $mailSubject, mailRecipient: $mailRecipient, mailBody: $mailBody, attachmentExist: $attachmentExist, attachmentName: $attachmentName, contentByte: $contentByte}')
+            --argjson attachmentExist false \
+            --arg attachmentName "" \
+            --arg contentByte "" \
+            '{mailSubject: $mailSubject, mailRecipient: $mailRecipient, mailBody: $mailBody, attachmentExist: $attachmentExist, attachmentName: $attachmentName, contentByte: $contentByte}')
 
           echo $JSON_OBJECT > message.json
          
