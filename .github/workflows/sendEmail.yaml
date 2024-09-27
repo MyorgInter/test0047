@@ -1,0 +1,50 @@
+name: Send Message to Azure Storage Queue
+
+on:
+  workflow_call:
+    inputs:
+        mail_subject:
+            description: 'Subject of the email'
+            required: true
+            type: string
+        mail_recipient:
+            description: 'Recipient of the email'
+            required: true
+            type: string
+        mail_body:
+            description: 'Body of the email'
+            required: true
+            type: string
+
+permissions:
+    id-token: write
+    contents: read
+  
+jobs:
+  send_message_to_queue:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Azure Login
+        uses: azure/login@v1
+        with:
+          client-id: ${{ secrets.AZURE_LOGICAPP_CLIENT_ID }}
+          tenant-id: ${{ secrets.AZURE_LOGICAPP_TENANT_ID }}
+          subscription-id: ${{ secrets.AZURE_LOGICAPP_SUBSCRIPTION_ID }}
+
+      - name: Install jq
+        run: sudo apt-get install jq -y
+
+      - name: Put message to queue
+        run: |
+          JSON_OBJECT=$(jq -n \
+            --arg mailSubject "${{ github.event.inputs.mail_subject }}" \
+            --arg mailRecipient "${{ github.event.inputs.mail_recipient }}" \
+            --arg mailBody "${{ github.event.inputs.mail_body }}" \
+          --argjson attachmentExist false \
+          --arg attachmentName "" \
+          --arg contentByte "" \
+          '{mailSubject: $mailSubject, mailRecipient: $mailRecipient, mailBody: $mailBody, attachmentExist: $attachmentExist, attachmentName: $attachmentName, contentByte: $contentByte}')
+
+          echo $JSON_OBJECT > message.json
+         
+          az storage message put --queue-name mailqueue --content "$(cat message.json)" --connection-string ${{ secrets.STORAGE_QUEUE_CONNECTION_STRING }}
